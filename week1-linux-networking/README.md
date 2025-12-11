@@ -1,3 +1,5 @@
+
+
 # 🛰️ Linux Gateway & High Availability Load Balancer
 
 **Status:** ✅ Completed
@@ -59,7 +61,7 @@ Menggunakan `systemd-networkd` sebagai renderer untuk stabilitas dan kecepatan.
 
 **Router – `/etc/netplan/01-netcfg.yaml`:**
 
-```yaml
+```
 network:
   version: 2
   renderer: networkd
@@ -157,15 +159,6 @@ Created as part of **System Engineer Intensive Roadmap** to strengthen foundatio
 
 ---
 
-## 🧾 Final Git Commands
-
-```bash
-git add README.md
-<<<<<<< HEAD
-git commit -m "Update dokumentasi lengkap Week 1 Networking"
-git push origin main
-
-
 ## 📸 Evidence & Artifacts
 
 **1. Load Balancing in Action**
@@ -176,11 +169,5 @@ git push origin main
 Seluruh konfigurasi asli yang digunakan dalam lab ini dapat dilihat di folder [configs](./configs/).
 * [Router Netplan](./configs/router/netplan.yaml)
 * [Nginx Load Balancer Config](./configs/router/nginx.conf)
-=======
-git commit -m "Final Update: Implemented Nginx Load Balancing and HA Testing"
-git push origin main
-```
 
----
 
->>>>>>> 38d1fe435b0865ee9e0b5bfa0e96a1fa0c72a07a
