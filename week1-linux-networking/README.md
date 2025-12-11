@@ -11,25 +11,28 @@ Proyek ini mendemonstrasikan pemahaman mendalam tentang Layer 2 (Data Link), Lay
 
 ## 🏗️ Architecture Topology
 
-```mermaid
 graph LR
-    Internet((Internet/WAN)) <-->|NAT| Adapter1[enp0s3: DHCP]
+
+    Internet((Internet/WAN)) <-->|NAT| WAN[enp0s3 (DHCP)]
+
     subgraph "vLab-Router (Gateway)"
-        Adapter1
-        Kernel[Kernel IP Forwarding]
-        IPTables[IPTables NAT & DNAT]
-        Adapter2[enp0s8: 192.168.10.1]
+        WAN
+        Kernel[IP Forwarding]
+        IPT[IPTables NAT & DNAT]
+        LAN[enp0s8 (192.168.10.1)]
     end
-    
-    Adapter2 <-->|Internal Network| ClientInterface[enp0s3: 192.168.10.2]
-    
+
+    LAN <-->|Internal Network| ClientIF[enp0s3 (192.168.10.2)]
+
     subgraph "vLab-Client (App Server)"
-        ClientInterface
+        ClientIF
         Nginx[Nginx Web Server :80]
     end
 
-    User[Laptop Host] -.->|Port 8080| Adapter1
-    IPTables -.->|Forward :80| Nginx
+    Laptop[Host Machine] -.->|Access :8080| WAN
+    IPT -.->|Forward :80| Nginx
+
+
 Host Machine: Asus Vivobook (16GB RAM)
 
 Hypervisor: VirtualBox 7.0
