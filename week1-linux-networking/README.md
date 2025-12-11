@@ -142,3 +142,15 @@ Simpan file ini, lakukan:
 git add README.md
 git commit -m "Update dokumentasi lengkap Week 1 Networking"
 git push origin main
+
+
+## 📸 Evidence & Artifacts
+
+**1. Load Balancing in Action**
+![Load Balancing Proof](screenshots/load-balancing-proof.png)
+*Browser secara otomatis dialihkan ke Server 2 saat Server 1 sibuk/mati.*
+
+**2. Configuration Files**
+Seluruh konfigurasi asli yang digunakan dalam lab ini dapat dilihat di folder [configs](./configs/).
+* [Router Netplan](./configs/router/netplan.yaml)
+* [Nginx Load Balancer Config](./configs/router/nginx.conf)
