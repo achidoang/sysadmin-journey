@@ -162,7 +162,7 @@ Created as part of **System Engineer Intensive Roadmap** to strengthen foundatio
 ## 📸 Evidence & Artifacts
 
 **1. Load Balancing in Action**
-![Load Balancing Proof](screenshots/load-balancing-proof.png)
+![Load Balancing Proof](screenshoots/load-balancing-proof.png)
 *Browser secara otomatis dialihkan ke Server 2 saat Server 1 sibuk/mati.*
 
 **2. Configuration Files**
