@@ -1,145 +1,167 @@
-# Week 1: Linux Networking & Infrastructure Simulation (Home Lab)
+# 🛰️ Linux Gateway & High Availability Load Balancer
 
-**Project Status:** ✅ Completed
+**Status:** ✅ Completed
 **Role:** System Engineer Intern
-**Stack:** Linux (Ubuntu Server), VirtualBox, Bash, Networking (TCP/IP), Nginx
+**Stack:** Linux (Ubuntu Server), Nginx (Reverse Proxy & LB), VirtualBox, Bash, TCP/IP Networking
 
-## 📌 Project Overview
-Proyek ini adalah simulasi infrastruktur jaringan *On-Premise* "Mini Branch Office" menggunakan environment virtual. Tujuan utamanya adalah membangun **Linux Gateway Router** dari nol yang menghubungkan *Private Subnet* (Isolated) ke *Public Internet*, serta mengekspos layanan internal (Web Server) ke jaringan luar secara aman.
+---
 
-Proyek ini mendemonstrasikan pemahaman mendalam tentang Layer 2 (Data Link), Layer 3 (Network), dan Layer 4 (Transport) pada model OSI.
+## 📌 Overview
 
-## 🏗️ Architecture Topology
+Proyek ini mensimulasikan infrastruktur *On-Premise* kecil yang berevolusi dari sekadar gateway router menjadi **High Availability Layer 7 Load Balancer**.
 
-```mermaid
+Tujuan utama:
+
+1. **Membangun Linux Gateway** untuk menghubungkan Private Subnet ke Internet.
+2. **Mengimplementasikan Nginx Reverse Proxy (Layer 7 Load Balancing)** untuk mendistribusikan trafik ke beberapa backend.
+3. **Melakukan Failover Simulation**, memastikan layanan tetap berjalan meskipun salah satu server mati.
+
+---
+
+## 🏗️ Infrastructure Topology
+
+```
 graph LR
-    Internet((Internet/WAN)) <-->|NAT| Adapter1[enp0s3: DHCP]
-    subgraph "vLab-Router (Gateway)"
-        Adapter1
-        Kernel[Kernel IP Forwarding]
-        IPTables[IPTables NAT & DNAT]
-        Adapter2[enp0s8: 192.168.10.1]
-    end
-    
-    Adapter2 <-->|Internal Network| ClientInterface[enp0s3: 192.168.10.2]
-    
-    subgraph "vLab-Client (App Server)"
-        ClientInterface
-        Nginx[Nginx Web Server :80]
+
+    Internet((Internet/WAN))
+    Internet -->|NAT| WAN[enp0s3 (DHCP)]
+
+    subgraph "vLab-Router (Gateway + Load Balancer)"
+        WAN --> Kernel[IP Forwarding]
+        Kernel --> Nginx[Nginx Reverse Proxy / LB]
+        Nginx --> LAN[enp0s8: 192.168.10.1]
     end
 
-    User[Laptop Host] -.->|Port 8080| Adapter1
-    IPTables -.->|Forward :80| Nginx
-Host Machine: Asus Vivobook (16GB RAM)
+    User[Laptop Host] -->|HTTP/80| Internet
 
-Hypervisor: VirtualBox 7.0
+    subgraph "Backend Pool (Private Subnet)"
+        LAN --> S1[Server-1: 192.168.10.2]
+        LAN --> S2[Server-2: 192.168.10.3]
+    end
+```
 
-Router Spec: 1 vCPU, 1GB RAM, Ubuntu Server 22.04
+### 💻 Host & VM Specs
 
-Client Spec: 1 vCPU, 1GB RAM, Ubuntu Server 22.04
+* **Host Machine:** Asus Vivobook (16GB RAM)
+* **Hypervisor:** VirtualBox 7.0
+* **Router VM:** Ubuntu Server 22.04 (Nginx + IPTables NAT)
+* **Backend VMs:** 2× Ubuntu Server 22.04 (Simple Web Server)
 
-⚙️ Configuration & Implementation
-1. Network Configuration (Netplan)
-Menggunakan systemd-networkd sebagai backend renderer.
+---
 
-Router Configuration (/etc/netplan/01-netcfg.yaml): Router bertindak sebagai Gateway. Interface 1 terhubung ke NAT (Internet), Interface 2 menjadi gerbang untuk jaringan lokal.
+## ⚙️ Configuration & Implementation
 
-YAML
+---
 
-network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    enp0s3:             # WAN Interface
-      dhcp4: true
-    enp0s8:             # LAN Interface
-      dhcp4: no
-      addresses:
-        - 192.168.10.1/24
-Client Configuration (/etc/netplan/01-netcfg.yaml): Client dikonfigurasi dengan IP Statis dan Gateway mengarah ke Router.
+### 1️⃣ Network Configuration (Netplan)
 
-YAML
+Menggunakan `systemd-networkd` sebagai renderer untuk stabilitas dan kecepatan.
 
+**Router – `/etc/netplan/01-netcfg.yaml`:**
+
+```yaml
 network:
   version: 2
   renderer: networkd
   ethernets:
     enp0s3:
-      dhcp4: no
+      dhcp4: true       # WAN
+    enp0s8:
+      dhcp4: no         # LAN Gateway
       addresses:
-        - 192.168.10.2/24
-      routes:
-        - to: default
-          via: 192.168.10.1
-      nameservers:
-        addresses: [8.8.8.8, 1.1.1.1]
-2. NAT & Port Forwarding (IPTables)
-Konfigurasi firewall untuk mentranslasikan alamat jaringan.
-
-Masquerade (SNAT): Mengizinkan Client (IP Private) mengakses internet dengan meminjam IP Router.
-
-Bash
-
-sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
-Port Forwarding (DNAT): Mengarahkan trafik dari Router Port 8080 ke Client Port 80.
-
-Bash
-
-sudo iptables -t nat -A PREROUTING -i enp0s3 -p tcp --dport 8080 -j DNAT --to-destination 192.168.10.2:80
-Forwarding Rules: Membuka jalur paket agar diizinkan melintas antar interface.
-
-Bash
-
-sudo iptables -A FORWARD -p tcp -d 192.168.10.2 --dport 80 -j ACCEPT
-sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-🔧 Troubleshooting & Challenges
-Masalah Utama: Persistence Config vs Cloud-Init
-Deskripsi: Setiap kali VM di-reboot, konfigurasi Netplan kembali ke default (DHCP) dan file manual tertimpa. Analisis Root Cause: Paket cloud-init secara otomatis men-generate file /etc/netplan/50-cloud-init.yaml saat boot, menimpa konfigurasi statis. Solusi:
-
-Membuat override config untuk mematikan fitur network pada cloud-init:
-
-Bash
-
-echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
-Menghapus file yang digenerate otomatis:
-
-Bash
-
-sudo rm -f /etc/netplan/50-cloud-init.yaml
-Membuat file konfigurasi manual yang permanen (01-netcfg.yaml).
-
-Masalah: IP Forwarding Reset
-Deskripsi: Setelah reboot, Client kehilangan koneksi internet. Solusi: Mengaktifkan packet forwarding di level kernel secara persisten via sysctl.
-
-Edit /etc/sysctl.conf -> uncomment net.ipv4.ip_forward=1.
-
-🚀 Verification Results
-Connectivity: Client berhasil melakukan ping 8.8.8.8 dan ping google.com.
-
-Routing: traceroute dari Client menunjukkan hop pertama adalah 192.168.10.1 (Router).
-
-Service Exposure: Browser pada Host (Laptop) berhasil mengakses http://127.0.0.1:8080 dan menampilkan halaman default Nginx yang berjalan di dalam Client VM yang terisolasi.
-
-Created as part of System Engineer Intensive Roadmap.
-
+        - 192.168.10.1/24
+```
 
 ---
 
-### Rangkuman: Apa Saja yang Kita Lakukan Hari Ini?
-*(Ini catatan untuk kamu pribadi, tidak perlu masuk ke GitHub)*
+### 2️⃣ Nginx Load Balancer (Layer 7)
 
-1.  **Membangun Lab Virtual:** Kita setup 2 VM di VirtualBox dengan topologi "Internal Network" yang aman, hemat resource laptop.
-2.  **Konfigurasi IP Manual:** Kita belajar pakai YAML di Netplan, bukan GUI. Kita menentukan mana IP Gateway dan mana IP Client.
-3.  **Mengaktifkan Router:** Kita mengubah Ubuntu Server biasa menjadi Router dengan mengaktifkan `ip_forward`.
-4.  **Manipulasi Trafik (IPTables):**
-    * Kita bikin Client bisa internetan (NAT/Masquerade).
-    * Kita bikin Web Server Client bisa dibuka dari laptop (DNAT/Port Forwarding).
-5.  **Troubleshooting Masalah Restart:** Ini yang paling mahal. Kita mengalahkan `cloud-init` yang selalu mereset settingan kita, dan membuat konfigurasi kita **TAHAN BANTING (Persistent)** terhadap reboot.
+Nginx menggantikan metode DNAT lama agar routing lebih cerdas dan fleksibel.
 
-**Langkah Selanjutnya:**
-Simpan file ini, lakukan:
+**Nginx – `/etc/nginx/sites-available/default`:**
+
+```nginx
+# Backend server group
+upstream astra_backend {
+    server 192.168.10.2;  # Server-1
+    server 192.168.10.3;  # Server-2
+}
+
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://astra_backend;
+
+        # Preserve client information
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+
+---
+
+### 3️⃣ Firewall & NAT (IPTables)
+
+Dipakai **hanya** untuk Masquerading. Forwarding port ditangani oleh Nginx.
+
+```bash
+# MASQUERADE: memberi akses internet untuk private subnet
+sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+
+# Persist rules across reboot
+sudo netfilter-persistent save
+```
+
+---
+
+## 🐛 Troubleshooting & Challenges
+
+### **1. Netplan Config Hilang Setelah Reboot**
+
+**Masalah:** Netplan selalu kembali ke DHCP karena Cloud-Init menimpa config.
+**Solusi:** Disable modul network pada cloud-init.
+
+```bash
+echo "network: {config: disabled}" | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+sudo rm -f /etc/netplan/50-cloud-init.yaml
+```
+
+---
+
+### **2. Load Balancing Tidak Terlihat (Browser Caching)**
+
+**Masalah:** Browser modern menggunakan *Keep-Alive*, request tidak selalu “dialihkan”.
+**Validasi:** Menggunakan `curl` atau Incognito membuktikan Round Robin bekerja.
+
+---
+
+## 🚀 High Availability Test
+
+Semua uji dilakukan melalui HTTP (port 80) ke Gateway.
+
+| Test Case      | Action                 | Expected Result                     | Actual Result | Status |
+| -------------- | ---------------------- | ----------------------------------- | ------------- | ------ |
+| Normal Traffic | Refresh berkali-kali   | Trafik bergantian S1 ↔ S2           | Sesuai        | ✅ PASS |
+| Node Failure   | Server-1 dimatikan     | Semua request dialihkan ke Server-2 | Sesuai        | ✅ PASS |
+| Recovery       | Server-1 hidup kembali | Kembali masuk rotasi otomatis       | Sesuai        | ✅ PASS |
+
+---
+
+## 📚 Project Note
+
+Created as part of **System Engineer Intensive Roadmap** to strengthen foundational networking, Linux internals, and HA concepts.
+
+---
+
+## 🧾 Final Git Commands
+
 ```bash
 git add README.md
+<<<<<<< HEAD
 git commit -m "Update dokumentasi lengkap Week 1 Networking"
 git push origin main
 
@@ -154,3 +176,11 @@ git push origin main
 Seluruh konfigurasi asli yang digunakan dalam lab ini dapat dilihat di folder [configs](./configs/).
 * [Router Netplan](./configs/router/netplan.yaml)
 * [Nginx Load Balancer Config](./configs/router/nginx.conf)
+=======
+git commit -m "Final Update: Implemented Nginx Load Balancing and HA Testing"
+git push origin main
+```
+
+---
+
+>>>>>>> 38d1fe435b0865ee9e0b5bfa0e96a1fa0c72a07a
