@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 1. Aplikasi Web Utama Kita
+  web-astra:
+    image: nginx:latest
+    container_name: astra-web
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/usr/share/nginx/html
+
+  # 2. Mata-mata (Pengambil Data CPU/RAM)
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: monitoring-node-exporter
+    restart: always
+    ports:
+      - "9100:9100"
+
+  # 3. Pengumpul Data (Database)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: monitoring-prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - node-exporter
+
+  # 4. Visualisasi (Dashboard Keren)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: monitoring-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
