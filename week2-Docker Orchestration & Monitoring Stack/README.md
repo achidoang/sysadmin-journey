@@ -39,7 +39,7 @@ Website dilayani oleh dua container berbeda. Jika satu container mati, trafik ot
 ### 3. Real-time Monitoring Dashboard
 Menggunakan "The Holy Trinity of Monitoring" (Prometheus + Grafana) untuk memantau kesehatan server secara live. Dashboard diakses melalui SSH Tunneling untuk keamanan.
 
-![Load Balancing Proof](screenshots/week2-grafana-dashboard)
+![Load Balancing Proof](screenshots/week2-grafana-dashboard.png)
 
 
 ## 📝 Key Learnings
