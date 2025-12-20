@@ -1,0 +1,26 @@
+---
+- name: Clean up Old Docker
+  shell: |
+    docker stop $(docker ps -a -q) || true
+    docker rm $(docker ps -a -q) || true
+  ignore_errors: yes
+
+- name: Install Nginx Package
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Start Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Deploy Dynamic HTML from Template
+  template:
+    src: index.j2                   # Mengambil dari folder templates/
+    dest: /var/www/html/index.html
+    mode: '0644'
+
+

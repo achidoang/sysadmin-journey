@@ -1,0 +1,12 @@
+---
+- name: Deploy Web Server with Roles
+  hosts: webservers
+  become: yes
+  roles:
+    - simple-web
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+---
+- name: Setup Web Server Nginx
+  hosts: webservers        # Target: Grup webservers di inventory
+  become: yes              # Jalankan semua sebagai Root (Sudo)
+
+  tasks:
+    # TUGAS 1: Matikan container week 2 biar port 80 gak bentrok
+    - name: Remove Old Docker Containers
+      shell: |
+        docker stop $(docker ps -a -q) || true
+        docker rm $(docker ps -a -a) || true
+      ignore_errors: yes   # Kalau gak ada container, jangan error. Lanjut >
+
+    # TUGAS 2: Install Nginx asli
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    # TUGAS 3: Pastikan Nginx Nyala
+    - name: Start Nginx Service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    # TUGAS 4: Copy file HTML dari Router ke Client
+    - name: Deploy Custom Homepage
+      copy:
+        src: index.html                # File di Router
+        dest: /var/www/html/index.html # Tujuan di Client
+        mode: '0644'
+
+
