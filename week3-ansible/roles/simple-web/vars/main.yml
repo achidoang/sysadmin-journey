@@ -1,13 +1,13 @@
 
-# page_title: "CI/CD Deployment Success"
-# heading_text: "Halo, Saya Ter-Deploy Otomatis!"
-# bg_color: "#fff3cd"  # Warna kuning muda
+page_title: "CI/CD Deployment Success"
+heading_text: "Halo, Saya Ter-Deploy Otomatis!"
+bg_color: "#fff3cd"  # Warna kuning muda
 
 
 
-page_title: "ERROR SYSTEM FAILURE"
-heading_text: "⚠️ MAAF WEBSITE SEDANG MELEDAK ⚠️"
-bg_color: "#ff0000"  # Merah total
+# page_title: "ERROR SYSTEM FAILURE"
+# heading_text: "⚠️ MAAF WEBSITE SEDANG MELEDAK ⚠️"
+# bg_color: "#ff0000"  # Merah total
 
 
 
