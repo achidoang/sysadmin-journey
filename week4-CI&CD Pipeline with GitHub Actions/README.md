@@ -36,12 +36,15 @@ Pemulihan dilakukan menggunakan **Git Revert**:
 
 ### 1. Successful Deployment Pipeline
 *(Screenshot GitHub Actions dengan Centang Hijau ✅ pada workflow "Auto Deploy to Production")*
+![Auto deploy](screenshots/auto-deploy.png)
 
 ### 2. Automated Web Update
 *(Screenshot Website dengan background Kuning/Tulisan "CI/CD Success" setelah push)*
+![web](web.png)
 
 ### 3. Rollback Action
 *(Screenshot History GitHub yang menunjukkan commit "Revert" dan workflow yang berjalan sukses)*
+![revert](revert.png)
+
 
 ---
-*Next Step: Storage Clustering with Ceph (Week 5)*

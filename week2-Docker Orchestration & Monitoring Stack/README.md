@@ -28,7 +28,7 @@ Saya juga mengimplementasikan **High Availability (HA)** stack dimana aplikasi b
 Menjalankan seluruh stack infrastruktur (App + Monitoring) dengan satu perintah deklaratif:
 `docker compose up -d`
 
-![Load Balancing Proof](screenshots/docker-compose-up.png)
+![Service orchestration](screenshots/docker-compose-up.png)
 
 
 ### 2. High Availability & Load Balancing
@@ -39,7 +39,7 @@ Website dilayani oleh dua container berbeda. Jika satu container mati, trafik ot
 ### 3. Real-time Monitoring Dashboard
 Menggunakan "The Holy Trinity of Monitoring" (Prometheus + Grafana) untuk memantau kesehatan server secara live. Dashboard diakses melalui SSH Tunneling untuk keamanan.
 
-![Load Balancing Proof](screenshots/week2-grafana-dashboard.png)
+![monitoring Proof](screenshots/week2-grafana-dashboard.png)
 
 
 ## 📝 Key Learnings
