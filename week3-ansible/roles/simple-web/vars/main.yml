@@ -1,4 +1,4 @@
-  GNU nano 6.2                     main.yml
+  # GNU nano 6.2                     main.yml
 page_title: "CI/CD Deployment Success"
 heading_text: "Halo, Saya Ter-Deploy Otomatis!"
 bg_color: "#fff3cd"  # Warna kuning muda
