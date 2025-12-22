@@ -1,0 +1,25 @@
+name: Auto Deploy to Production
+
+# Kapan robot ini bekerja?
+# Saat ada 'push' ke branch 'main'
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-infrastructure:
+    # Siapa yang mengerjakan?
+    # Runner kita di Router (self-hosted)
+    runs-on: self-hosted
+
+    steps:
+    # 1. Robot mengambil kodingan terbaru dari GitHub
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # 2. Robot masuk ke folder week 3 dan menjalankan Ansible
+    - name: Run Ansible Playbook
+      run: |
+        echo "Memulai Deployment Otomatis..."
+        cd week3-ansible  # Masuk folder project Ansible
+        ansible-playbook -i hosts site.yml

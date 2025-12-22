@@ -1,7 +1,7 @@
   GNU nano 6.2                     main.yml
-page_title: "Week 3 Final Exam"
-heading_text: "Ansible Roles & Variables"
-bg_color: "#e0f7fa"  # Warna biru muda
+page_title: "CI/CD Deployment Success"
+heading_text: "Halo, Saya Ter-Deploy Otomatis!"
+bg_color: "#fff3cd"  # Warna kuning muda
 
 
 
