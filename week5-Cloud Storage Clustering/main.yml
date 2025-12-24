@@ -1,0 +1,47 @@
+---
+# 1. Install Paket
+- name: Install MicroCeph via Snap
+  shell: snap install microceph --channel=quincy/stable --classic
+  args:
+    creates: /snap/bin/microceph
+
+# 2. PAKSA Group Dibuat (Apapun yang terjadi, group ini HARUS ada)
+- name: Force create 'microceph' group
+  group:
+    name: microceph
+    state: present
+    system: yes
+
+# 3. DEBUGGING: Cek apakah group benar-benar ada
+- name: Verify group existence
+  shell: cat /etc/group | grep microceph
+  register: group_check
+
+- name: Show group check result
+  debug:
+    var: group_check.stdout
+
+# 4. Masukkan User ke Group (Baru aman dilakukan sekarang)
+- name: Add user to microceph group
+  user:
+    name: "{{ ansible_user }}"
+    groups: microceph
+    append: yes
+
+# 5. Fix Permission Folder
+- name: Fix permissions for .ceph directory
+  file:
+    path: /home/{{ ansible_user }}/.ceph
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0700'
+
+# 6. Alias Command (Supaya enak ngetiknya)
+- name: Create alias for microceph
+  lineinfile:
+    path: /home/{{ ansible_user }}/.bashrc
+    line: 'alias ceph="microceph.ceph"'
+    create: yes
+
+

@@ -1,0 +1,18 @@
+
+---
+- name: Deploy Infrastructure (Web + Storage)
+  hosts: webservers
+  become: yes
+  roles:
+    - simple-web      # Role lama (Nginx)
+    - storage-ceph    # Role baru (Storage)
+
+
+
+
+
+
+
+
+
+

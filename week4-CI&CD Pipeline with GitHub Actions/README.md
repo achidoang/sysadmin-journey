@@ -40,11 +40,11 @@ Pemulihan dilakukan menggunakan **Git Revert**:
 
 ### 2. Automated Web Update
 *(Screenshot Website dengan background Kuning/Tulisan "CI/CD Success" setelah push)*
-![web](web.png)
+![web](screenshots/web.png)
 
 ### 3. Rollback Action
 *(Screenshot History GitHub yang menunjukkan commit "Revert" dan workflow yang berjalan sukses)*
-![revert](revert.png)
+![revert](screenshots/revert.png)
 
 
 ---
