@@ -35,10 +35,8 @@ Skenario pengujian ketahanan data:
 ## 📸 Evidence
 
 ### 1. Cluster Status (2 Nodes, 2 OSDs)
-*(Tempel Screenshot Status di sini)*
 ![cluster](screenshots/Cluster-Status.png)
 
 ### 2. Data Persistence Test (Failover Success)
-*(Tempel Screenshot Client 2 berhasil membaca file dari Client 1)*
 ![bukti](screenshots/bukti.png)
 ---
