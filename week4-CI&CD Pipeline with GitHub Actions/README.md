@@ -35,16 +35,16 @@ Pemulihan dilakukan menggunakan **Git Revert**:
 ## 📸 Evidence
 
 ### 1. Successful Deployment Pipeline
-*(Screenshot GitHub Actions dengan Centang Hijau ✅ pada workflow "Auto Deploy to Production")*
+
 ![Auto deploy](screenshots/auto-deploy.png)
 
 ### 2. Automated Web Update
-*(Screenshot Website dengan background Kuning/Tulisan "CI/CD Success" setelah push)*
+
 ![web](screenshots/web.png)
 
 ### 3. Rollback Action
-*(Screenshot History GitHub yang menunjukkan commit "Revert" dan workflow yang berjalan sukses)*
+
 ![revert](screenshots/revert.png)
 
-
 ---
+*Created by Muhammad Aji Saputra - SysAdmin Journey*

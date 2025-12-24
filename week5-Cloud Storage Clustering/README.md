@@ -40,3 +40,4 @@ Skenario pengujian ketahanan data:
 ### 2. Data Persistence Test (Failover Success)
 ![bukti](screenshots/bukti.png)
 ---
+*Created by Muhammad Aji Saputra - SysAdmin Journey*

@@ -47,7 +47,6 @@ Melakukan *refactoring* playbook menjadi struktur **Roles** yang modular:
 
 
 ### Final Result (Dynamic Web Page)
-*(Screenshot browser menampilkan website background biru muda dengan tulisan "Week 3 Final Exam")*
 ![Final](screenshots/web.png)
 
 

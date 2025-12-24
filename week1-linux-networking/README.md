@@ -171,3 +171,4 @@ Seluruh konfigurasi asli yang digunakan dalam lab ini dapat dilihat di folder [c
 * [Nginx Load Balancer Config](./configs/router/nginx.conf)
 
 
+*Created by Muhammad Aji Saputra - SysAdmin Journey*
