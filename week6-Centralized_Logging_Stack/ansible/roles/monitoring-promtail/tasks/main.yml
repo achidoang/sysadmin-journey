@@ -1,0 +1,50 @@
+---
+- name: Install Unzip
+  apt:
+    name: unzip
+    state: present
+    update_cache: yes
+
+- name: Download Promtail
+  get_url:
+    url: https://github.com/grafana/loki/releases/download/v2.8.2/promtail-linu>
+    dest: /tmp/promtail.zip
+
+- name: Unzip Promtail
+  unarchive:
+    src: /tmp/promtail.zip
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: '0755'
+
+- name: Create Config Directory
+  file:
+    path: /etc/promtail
+    state: directory
+
+- name: Deploy Config File
+  template:
+    src: config.yaml.j2
+    dest: /etc/promtail/config.yaml
+  notify: Restart Promtail
+
+- name: Create Systemd Service
+  copy:
+    dest: /etc/systemd/system/promtail.service
+    content: |
+      [Unit]
+      Description=Promtail Log Shipper
+      After=network.target
+
+      [Service]
+      User=root
+      ExecStart=/usr/local/bin/promtail-linux-amd64 -config.file=/etc/promtail/>
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: Restart Promtail
+
+- name: Start Promtail
+  systemd:
+    name: promtail
+    state: started
